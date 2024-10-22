@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-store';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -24,6 +25,18 @@ import { redisStore } from 'cache-manager-redis-store';
           ttl: 60 * 60 * 24 * 7,
         }
       }
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        type: 'postgres',
+        host: process.env.POSTGRESHOST,
+        port: +process.env.POSTGRESPORT,
+        username: process.env.POSTGRESUSER,
+        password: process.env.POSTGRESPASSWORD,
+        database: process.env.POSTGRESDB,
+        synchronize: true,
+        entities: []
+      })
     })
   ],
   controllers: [AppController],
