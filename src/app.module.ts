@@ -2,14 +2,29 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-store';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-	  CacheModule.register({
+	  CacheModule.registerAsync({
       isGlobal: true,
-    }),
+      useFactory: async () => {
+        const store = await redisStore({
+          socket: {
+            host: process.env.REDISHOST,
+            port: +process.env.REDISPORT,
+          },
+          url: process.env.REDISURL,
+          password: process.env.REDISPASSWORD
+        });
+        return {
+          store: store as unknown as CacheStore,
+          ttl: 60 * 60 * 24 * 7,
+        }
+      }
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
