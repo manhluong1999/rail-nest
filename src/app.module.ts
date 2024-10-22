@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-store';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: true,
         entities: []
       })
-    })
+    }),
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
